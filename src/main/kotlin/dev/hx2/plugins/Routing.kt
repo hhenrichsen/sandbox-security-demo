@@ -18,6 +18,7 @@ fun Application.configureRouting() {
     val markdownService: MarkdownService by inject()
     val postService: PostService by inject()
     val userService: UserService by inject()
+
     routing {
         post("/api/users") {
             val user = call.receive<ExposedUser>()
