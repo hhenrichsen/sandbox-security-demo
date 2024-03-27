@@ -7,10 +7,10 @@ import kotlinx.html.div
 fun HTML.index() {
     page("Hunter's Site") {
         div {
-            classes = setOf("min-h-full flex flex-col justify-center items-center")
+            classes = setOf("flex flex-col flex-grow-1 justify-center items-center")
             div {
                 classes = setOf("bg-white", "p-4", "rounded-md", "shadow-md")
-                +"Hello from Hunter's Site"
+                +"Hello from Other's Site"
             }
         }
     }
