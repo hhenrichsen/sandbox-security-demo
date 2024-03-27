@@ -18,6 +18,7 @@ version = "0.0.1"
 
 application {
     mainClass.set("dev.hx2.ApplicationKt")
+    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=true")
 }
 
 repositories {
