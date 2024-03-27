@@ -1,1 +1,1 @@
-rootProject.name = "ktor-sample"
+rootProject.name = "sandbox-security-demo"
