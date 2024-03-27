@@ -20,12 +20,34 @@ fun HTML.page(title: String, block: BODY.() -> Unit) {
     }
     body {
         classes =
-            setOf("h-full flex flex-col justify-center items-center @dark:bg-neutral-800 bg-neutral-100 m-0 gap-4")
+            setOf(
+                "h-full",
+                "flex",
+                "flex-col",
+                "justify-center",
+                "items-center",
+                "@dark:bg-neutral-800",
+                "bg-neutral-100",
+                "m-0",
+                "gap-4",
+                "font-sans"
+            )
         block()
 
         footer {
             classes =
-                setOf("w-full flex justify-center items-center py-4 @dark:bg-neutral-900 bg-neutral-200 @dark:text-neutral-300 text-neutral-500 text-sm")
+                setOf(
+                    "w-full",
+                    "flex",
+                    "justify-center",
+                    "items-center",
+                    "py-4",
+                    "@dark:bg-neutral-900",
+                    "bg-neutral-200",
+                    "@dark:text-neutral-300",
+                    "text-neutral-500",
+                    "text-sm"
+                )
             span {
                 classes = setOf("pr-2")
                 +"Made with"
@@ -38,7 +60,7 @@ fun HTML.page(title: String, block: BODY.() -> Unit) {
             a {
                 href = "https://alpinejs.dev"
                 target = ATarget.blank
-                classes = setOf("flex justify-center items-center @dark:text-neutral-300 text-neutral-500")
+                classes = setOf("flex", "justify-center", "items-center", "@dark:text-neutral-300", "text-neutral-500")
                 icon("simple-icons:alpinedotjs", color = iconColor)
             }
             span {
@@ -48,7 +70,7 @@ fun HTML.page(title: String, block: BODY.() -> Unit) {
             a {
                 href = "https://htmx.org"
                 target = ATarget.blank
-                classes = setOf("flex justify-center items-center")
+                classes = setOf("flex", "justify-center", "items-center")
                 icon("simple-icons:htmx", color = iconColor)
             }
             span {
@@ -58,13 +80,13 @@ fun HTML.page(title: String, block: BODY.() -> Unit) {
             a {
                 href = "https://ktor.io"
                 target = ATarget.blank
-                classes = setOf("flex justify-center items-center")
-                icon("simple-icons:kotlin", color = iconColor)
+                classes = setOf("flex", "justify-center", "items-center")
+                icon("devicon-plain:ktor", color = iconColor)
             }
 
             span {
                 classes = setOf("px-2")
-                +"by Hunter."
+                +"by Hunter in Salt Lake, Utah."
             }
         }
     }
