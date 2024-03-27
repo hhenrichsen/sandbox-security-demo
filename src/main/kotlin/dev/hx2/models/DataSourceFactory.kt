@@ -2,25 +2,25 @@ package dev.hx2.models
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import io.ktor.server.application.*
+import io.github.cdimascio.dotenv.Dotenv
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object DataSourceFactory {
-    fun init(environment: ApplicationEnvironment) {
-        Database.connect(configureHikari(environment))
+    fun init(dotenv: Dotenv) {
+        Database.connect(configureHikari(dotenv))
 
         transaction {
             SchemaUtils.createMissingTablesAndColumns(UserService.Users)
         }
     }
 
-    private fun configureHikari(environment: ApplicationEnvironment): HikariDataSource {
+    private fun configureHikari(dotenv: Dotenv): HikariDataSource {
         Class.forName("org.postgresql.Driver")
-        val url = environment.config.property("postgres.url").getString()
-        val user = environment.config.property("postgres.user").getString()
-        val password = environment.config.property("postgres.password").getString()
+        val url = dotenv["POSTGRES_URL"]
+        val user = dotenv["POSTGRES_USER"]
+        val password = dotenv["POSTGRES_PASSWORD"]
         val config = HikariConfig()
         config.username = user
         config.password = password
