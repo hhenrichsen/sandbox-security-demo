@@ -7,7 +7,7 @@ fun HTML.postView(title: String, body: String) {
         div {
             classes = setOf("min-h-full flex flex-col justify-center items-center")
             main {
-                classes = setOf("bg-white", "p-4", "rounded-md", "shadow-md", "min-w-[65ch]")
+                classes = setOf("bg-white", "@dark:bg-neutral-900", "p-4", "rounded-md", "shadow-md", "min-w-[65ch]")
                 h2 {
                     classes = setOf("text-3xl", "font-bold", "mb-4")
                     +title
@@ -23,6 +23,53 @@ fun HTML.postView(title: String, body: String) {
                     style {
                         unsafe {
                             +"""
+                                
+                    @media (prefers-color-scheme: dark) {
+                        body {
+                            color: #f7fafc;
+                            background-color: #1a202c;
+                        }
+                        
+                        h1, h2, h3, h4, h5, h6 {
+                            color: #f7fafc;
+                        }
+                        
+                        p {
+                            color: #cbd5e0;
+                        }
+                        
+                        a {
+                            color: #63b3ed;
+                        }
+                        
+                        a:hover {
+                            color: #4299e1;
+                        }
+                        
+                        blockquote {
+                            color: #cbd5e0;
+                            border-left-color: #cbd5e0;
+                        }
+                        
+                        pre {
+                            color: #cbd5e0;
+                            background-color: #2d3748;
+                        }
+                        
+                        code {
+                            color: #cbd5e0;
+                            background-color: #2d3748;
+                        }
+                        
+                        ol > li {
+                            color: #cbd5e0;
+                        }
+                        
+                        ul > li {
+                            color: #cbd5e0;
+                        }
+                    }
+                    
                     p {
                          margin-top: 1rem;
                     }
@@ -52,6 +99,10 @@ fun HTML.postView(title: String, body: String) {
                         line-height: 2rem;
                         margin-top: 1.5rem;
                         margin-bottom: 0.5rem;
+                    }
+                    
+                    * {
+                        max-width: 100%;
                     }
                 """.trimIndent()
                         }

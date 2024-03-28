@@ -307,16 +307,58 @@ fun Application.configureRouting() {
             }
         }
         get("/") {
-            call.respondHtml {
-                index()
+            authentication.withAuthOrNull(call) { auth ->
+                println(auth)
+                val groups = auth?.let { groupService.getByUser(it.id) } ?: emptyList()
+                call.respondHtml {
+                    index(auth, groups)
+                }
             }
         }
-        get("/{slug}") {
-            val slug = call.parameters["slug"] ?: return@get call.respond(HttpStatusCode.NotFound)
-            val post = postService.getBySlug(slug) ?: return@get call.respond(HttpStatusCode.NotFound)
-            val body = sanitizer.sanitize(post.html)
-            call.respondHtml {
-                postView(post.title, body)
+        get("/register") {
+            authentication.withAuthOrNull(call) {
+                if (it != null) {
+                    call.response.headers.append("HX-Redirect", "/")
+                    call.respondRedirect("/")
+                }
+                call.respondHtml {
+                    register()
+                }
+            }
+        }
+        get("/notes/new") {
+            authentication.withAuth(call) { auth ->
+                val groups = groupService.getByUser(auth.id)
+                call.respondHtml {
+                    createNote(groups, auth)
+                }
+            }
+            call.respond(HttpStatusCode.Unauthorized)
+        }
+        get("/notes/mine") {
+            authentication.withAuth(call) { auth ->
+                val groups = groupService.getByUser(auth.id)
+                val notes = groups.flatMap {
+                    noteService.getByGroup(it.id)
+                }.sortedBy { it.created }
+                call.respondHtml {
+                    myNotes(notes, auth)
+                }
+            }
+        }
+        get("/groups/new") {
+            authentication.withAuth(call) { auth ->
+                call.respondHtml {
+                    createGroup(auth)
+                }
+            }
+        }
+        get("/groups/invite") {
+            authentication.withAuth(call) { auth ->
+                val groups = groupService.getByUser(auth.id, requireAdmin = true)
+                call.respondHtml {
+                    inviteUser(groups, auth)
+                }
             }
         }
     }

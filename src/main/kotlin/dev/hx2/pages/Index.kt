@@ -1,16 +1,24 @@
 package dev.hx2.pages
 
-import kotlinx.html.HTML
-import kotlinx.html.classes
-import kotlinx.html.div
+import dev.hx2.components.linkButton
+import dev.hx2.models.ExposedGroupLike
+import dev.hx2.models.ExposedUser
+import kotlinx.html.*
 
-fun HTML.index() {
-    page("Hunter's Site") {
+fun HTML.index(auth: ExposedUser?, groups: List<ExposedGroupLike>) {
+    println(groups)
+    page("Hunter's Site", auth) {
         div {
-            classes = setOf("flex", "flex-col", "flex-grow-1", "justify-center", "items-center")
-            div {
-                classes = setOf("bg-white", "p-4", "rounded-md", "shadow-md")
-                +"Hello from Hunter's Site"
+            classes = setOf("flex", "flex-col", "flex-grow-1", "justify-center", "items-center", "gap-8", "text-center")
+            if (auth == null) {
+                linkButton("/register", "Register")
+            } else {
+                linkButton("/groups/new", "Create a Group")
+                if (groups.isNotEmpty()) {
+                    linkButton("/groups/invite", "Add Some Friends")
+                    linkButton("/notes/new", "Create a Note")
+                    linkButton("/notes/mine", "View My Notes")
+                }
             }
         }
     }

@@ -1,0 +1,31 @@
+package dev.hx2.pages
+
+import dev.hx2.components.inputWithTitle
+import dev.hx2.models.ExposedGroupLike
+import dev.hx2.models.ExposedUser
+import kotlinx.html.*
+
+fun HTML.createGroup(auth: ExposedUser) {
+    page("Create Group", auth) {
+        classes = setOf("flex", "flex-col", "flex-grow-1", "justify-center", "items-center")
+        div {
+            classes = setOf("bg-white", "@dark:bg-neutral-900", "p-4", "rounded-md", "shadow-md")
+            h2 {
+                classes = setOf("text-l", "font-semibold", "mb-4", "text-teal-500")
+                +"Create Group"
+            }
+
+            form {
+                attributes["hx-ext"] = "json-enc"
+                attributes["hx-post"] = "/api/groups"
+                classes = setOf("flex", "flex-col")
+                inputWithTitle("slug", "Slug")
+                button {
+                    classes = setOf("my-4", "p-2", "bg-teal-500", "text-white", "rounded-md")
+                    type = ButtonType.submit
+                    +"Create"
+                }
+            }
+        }
+    }
+}
