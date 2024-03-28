@@ -75,6 +75,12 @@ class UserService() {
         }
     }
 
+    suspend fun readAllUsernames(): List<String> {
+        return dbQuery {
+            Users.selectAll().map { it[Users.username] }
+        }
+    }
+
     suspend fun getByUsername(username: String): ExposedUser? {
         return dbQuery {
             Users.select { Users.username eq username }

@@ -5,7 +5,7 @@ import dev.hx2.models.ExposedGroupLike
 import dev.hx2.models.ExposedUser
 import kotlinx.html.*
 
-fun HTML.inviteUser(groups: List<ExposedGroupLike>, auth: ExposedUser) {
+fun HTML.inviteUser(groups: List<ExposedGroupLike>, allUsers: List<String>, auth: ExposedUser) {
     page("Create Note", auth) {
         classes = setOf("flex", "flex-col", "flex-grow-1", "justify-center", "items-center")
         div {
@@ -19,6 +19,15 @@ fun HTML.inviteUser(groups: List<ExposedGroupLike>, auth: ExposedUser) {
                 attributes["hx-ext"] = "json-enc"
                 attributes["hx-post"] = "/api/groups/invite"
                 classes = setOf("flex", "flex-col")
+                dataList {
+                    id = "users"
+                    allUsers.forEach {
+                        option {
+                            value = it
+                            +it
+                        }
+                    }
+                }
                 label {
                     classes = setOf("text-xs", "font-light", "text-neutral-900", "@dark:text-neutral-100")
                     htmlFor = "group"
@@ -34,6 +43,7 @@ fun HTML.inviteUser(groups: List<ExposedGroupLike>, auth: ExposedUser) {
                     id = "username"
                     name = "username"
                     type = InputType.text
+                    list = "users"
                     classes = setOf(
                         "p-2",
                         "border",

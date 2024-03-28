@@ -363,8 +363,9 @@ fun Application.configureRouting() {
         get("/groups/invite") {
             authentication.withAuth(call) { auth ->
                 val groups = groupService.getByUser(auth.id, requireAdmin = true)
+                val usernames = userService.readAllUsernames()
                 call.respondHtml {
-                    inviteUser(groups, auth)
+                    inviteUser(groups, usernames, auth)
                 }
             }
         }
