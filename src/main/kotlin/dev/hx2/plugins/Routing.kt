@@ -121,6 +121,10 @@ fun Application.configureRouting() {
         post("/api/register") {
             withErrorHandling {
                 val user = call.receive<CreateUser>()
+                if (user.username.isEmpty()) {
+                    call.respond(HttpStatusCode.BadRequest, "Username must be at least 1 character")
+                    return@withErrorHandling
+                }
                 if (userService.getByUsername(user.username) != null) {
                     call.respond(HttpStatusCode.Conflict)
                     return@withErrorHandling
@@ -142,11 +146,17 @@ fun Application.configureRouting() {
             withErrorHandling {
                 authentication.withAuth(call) { auth ->
                     val group = call.receive<CreateGroup>()
-                    val id = groupService.create(
-                        group.slug?.lowercase()?.replace(Regex("\\W"), "-") ?: group.title.replace(
+                    if (group.title.isEmpty()) {
+                        call.respond(HttpStatusCode.BadRequest, "Title must be at least 1 character")
+                        return@withAuth
+                    }
+                    val slug = group.slug?.takeIf { it.isNotEmpty() }?.lowercase()?.replace(Regex("\\W"), "-")
+                        ?: group.title.lowercase().replace(
                             Regex("\\W"),
                             "-"
-                        ),
+                        )
+                    val id = groupService.create(
+                        slug,
                         group.title,
                         auth.id
                     )
@@ -296,19 +306,21 @@ fun Application.configureRouting() {
         }
         get("/notes/{group}/{id}") {
             withErrorHandling {
-                withGroup(groupService, "group") { group ->
-                    val noteId = call.parameters["id"]?.toIntOrNull()
-                    if (noteId == null) {
-                        call.respond(HttpStatusCode.BadRequest)
-                        return@withGroup
-                    }
-                    val note = noteService.read(noteId)
-                    if (note == null) {
-                        call.respond(HttpStatusCode.NotFound)
-                        return@withGroup
-                    }
-                    call.respondHtml {
-                        postView(note, markdownService.parse(note.content))
+                authentication.withAuthOrNull(call) { auth ->
+                    withFullGroup(groupService, "group") { group ->
+                        val noteId = call.parameters["id"]?.toIntOrNull()
+                        if (noteId == null) {
+                            call.respond(HttpStatusCode.BadRequest)
+                            return@withFullGroup
+                        }
+                        val note = noteService.read(noteId)
+                        if (note == null) {
+                            call.respond(HttpStatusCode.NotFound)
+                            return@withFullGroup
+                        }
+                        call.respondHtml {
+                            postView(auth, note, group, markdownService.parse(note.content))
+                        }
                     }
                 }
             }

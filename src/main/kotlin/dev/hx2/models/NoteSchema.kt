@@ -14,7 +14,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 data class CreateNote(
     val title: String,
     val content: String,
-    val group: String
+    val group: String,
+    val private: String? = null,
 )
 
 @Serializable()
@@ -23,7 +24,8 @@ data class ExposedNote(
     val title: String,
     val content: String,
     val created: LocalDateTime,
-    val owner: ExposedGroupWithoutMembers
+    val owner: ExposedGroupWithoutMembers,
+    val public: Boolean = false
 )
 
 class NoteService(private val groupService: GroupService) {
@@ -33,6 +35,7 @@ class NoteService(private val groupService: GroupService) {
         val content = text("content")
         val owner = reference("owner", GroupService.Groups.id)
         val created = datetime("created").default(now().toLocalDateTime(TimeZone.UTC).toJavaLocalDateTime())
+        val public = bool("public").default(false)
 
         override val primaryKey = PrimaryKey(id)
     }
@@ -51,6 +54,7 @@ class NoteService(private val groupService: GroupService) {
             it[title] = note.title
             it[content] = note.content
             it[owner] = note.group.toIntOrNull() ?: throw IllegalArgumentException("Invalid owner id")
+            it[public] = note.private == null
         }[Notes.id]
     }
 
@@ -62,7 +66,8 @@ class NoteService(private val groupService: GroupService) {
                     result[Notes.title],
                     result[Notes.content],
                     result[Notes.created].toKotlinLocalDateTime(),
-                    groupService.read(result[Notes.owner]) ?: return@mapNotNull null
+                    groupService.read(result[Notes.owner]) ?: return@mapNotNull null,
+                    result[Notes.public]
                 )
             }.singleOrNull()
     }
@@ -77,6 +82,7 @@ class NoteService(private val groupService: GroupService) {
                     result[Notes.content],
                     result[Notes.created].toKotlinLocalDateTime(),
                     group,
+                    result[Notes.public]
                 )
             }
     }
@@ -89,7 +95,8 @@ class NoteService(private val groupService: GroupService) {
                     result[Notes.title],
                     result[Notes.content],
                     result[Notes.created].toKotlinLocalDateTime(),
-                    groupService.read(result[Notes.owner]) ?: return@mapNotNull null
+                    groupService.read(result[Notes.owner]) ?: return@mapNotNull null,
+                    result[Notes.public],
                 )
             }
     }
@@ -99,6 +106,7 @@ class NoteService(private val groupService: GroupService) {
             it[title] = note.title
             it[content] = note.content
             it[owner] = note.owner.id
+            it[public] = note.public
         }
     }
 

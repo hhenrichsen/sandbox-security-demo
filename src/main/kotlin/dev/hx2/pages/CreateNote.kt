@@ -71,6 +71,17 @@ fun HTML.createNote(groups: List<ExposedGroupLike>, auth: ExposedUser) {
                         "@dark:text-neutral-100",
                     )
                 }
+                label {
+                    classes = setOf("text-xs", "font-light", "text-neutral-900", "@dark:text-neutral-100", "mt-4")
+                    htmlFor = "private"
+                    +"Private"
+                }
+                input {
+                    type = InputType.checkBox
+                    id = "private"
+                    name = "private"
+
+                }
                 button {
                     classes = setOf("my-4", "p-2", "bg-teal-500", "text-white", "rounded-md")
                     +"Pass it!"
