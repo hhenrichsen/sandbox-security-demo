@@ -19,6 +19,7 @@ class Authentication(private val userService: UserService) {
         }
         val user = userService.getUserByToken(auth)
         if (user == null) {
+            call.response.headers.append("Set-Cookie", "token=; Path=/; HttpOnly; SameSite=Strict")
             call.respond(HttpStatusCode.Unauthorized)
             return
         }
@@ -29,11 +30,11 @@ class Authentication(private val userService: UserService) {
         call: ApplicationCall,
         block: suspend (auth: ExposedUser?) -> Unit
     ) {
-        println(call.request.cookies.rawCookies)
-        println(call.request.cookies["token"])
         val auth = call.request.cookies["token"] ?: return block(null)
         val user = userService.getUserByToken(auth)
-        println(user)
+        if (user == null) {
+            call.response.headers.append("Set-Cookie", "token=; Path=/; HttpOnly; SameSite=Strict")
+        }
         return block(user)
     }
 }
