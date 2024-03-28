@@ -5,5 +5,6 @@ import org.koin.dsl.module
 
 val modelsModule = module {
     singleOf(::UserService)
-    singleOf(::PostService)
+    singleOf(::NoteService)
+    singleOf(::GroupService)
 }

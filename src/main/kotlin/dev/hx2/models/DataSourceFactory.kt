@@ -12,7 +12,12 @@ object DataSourceFactory {
         Database.connect(configureHikari(dotenv))
 
         transaction {
-            SchemaUtils.createMissingTablesAndColumns(UserService.Users)
+            SchemaUtils.createMissingTablesAndColumns(
+                UserService.Users,
+                GroupService.Groups,
+                NoteService.Notes,
+                GroupService.GroupMembership
+            )
         }
     }
 

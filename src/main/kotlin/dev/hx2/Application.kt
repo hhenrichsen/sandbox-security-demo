@@ -7,6 +7,7 @@ import dev.hx2.plugins.configureHTTP
 import dev.hx2.plugins.configureMonitoring
 import dev.hx2.plugins.configureRouting
 import dev.hx2.plugins.configureSerialization
+import dev.hx2.services.serviceModule
 import io.github.cdimascio.dotenv.dotenv
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -24,7 +25,7 @@ fun main(args: Array<String>) {
 
 fun Application.module() {
     koin {
-        modules(coreModule, modelsModule)
+        modules(coreModule, modelsModule, serviceModule)
     }
     val dotenv = dotenv {
         directory = "src/main/resources"
