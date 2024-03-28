@@ -24,7 +24,7 @@ fun HTML.createNote(groups: List<ExposedGroupLike>, auth: ExposedUser) {
                     htmlFor = "group"
                     +"Group"
                 }
-                selectFromList("group", groups, "") { it.id.toString() to it.slug }
+                selectFromList("group", groups, "") { it.id.toString() to it.title }
                 label {
                     classes = setOf("text-xs", "font-light", "text-neutral-900", "@dark:text-neutral-100", "mt-4")
                     htmlFor = "title"

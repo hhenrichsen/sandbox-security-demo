@@ -3,7 +3,6 @@ package dev.hx2.pages
 import dev.hx2.models.ExposedNote
 import dev.hx2.models.ExposedUser
 import kotlinx.html.*
-import java.lang.Integer.max
 import java.lang.Integer.min
 
 fun HTML.myNotes(notes: List<ExposedNote>, auth: ExposedUser) {
@@ -30,7 +29,7 @@ fun HTML.myNotes(notes: List<ExposedNote>, auth: ExposedUser) {
                     )
                     h2 {
                         classes = setOf("text-l", "font-semibold", "mb-4", "text-teal-500")
-                        +it.title
+                        +"${it.title} (via ${it.owner.title})"
                     }
                     p {
                         classes = setOf(

@@ -9,30 +9,37 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 
 @Serializable
-data class CreateGroup(val slug: String)
+data class CreateGroup(val title: String, val slug: String? = title.replace(Regex("\\W"), "-"))
 
 interface ExposedGroupLike {
     val id: Int
+    val title: String
     val slug: String
 }
 
 @Serializable
 data class ExposedGroup(
     override val id: Int,
+    override val title: String,
     val admin: ExposedUser,
     override val slug: String,
     val members: List<ExposedUser>
 ) : ExposedGroupLike
 
 @Serializable
-data class ExposedGroupWithoutMembers(override val id: Int, val admin: Int, override val slug: String) :
-    ExposedGroupLike
+data class ExposedGroupWithoutMembers(
+    override val id: Int,
+    override val title: String,
+    val admin: Int,
+    override val slug: String
+) : ExposedGroupLike
 
 class GroupService(val userService: UserService) {
     object Groups : Table() {
         val id = integer("id").autoIncrement()
         val admin = reference("admin", UserService.Users.id)
         val slug = varchar("slug", length = 50).uniqueIndex()
+        val title = varchar("title", length = 50)
 
         override val primaryKey = PrimaryKey(id)
     }
@@ -53,17 +60,19 @@ class GroupService(val userService: UserService) {
     suspend fun <T> dbQuery(block: suspend () -> T): T =
         newSuspendedTransaction(Dispatchers.IO) { block() }
 
-    suspend fun create(slugValue: String, adminId: Int): Int = dbQuery {
+    suspend fun create(slug: String, title: String, adminId: Int): Int = dbQuery {
         Groups.insert {
-            it[admin] = adminId
-            it[slug] = slugValue
+            it[this.title] = title
+            it[this.admin] = adminId
+            it[this.slug] = slug
         }[Groups.id]
     }
 
 
-    suspend fun create(group: ExposedGroup): Int = dbQuery {
+    suspend fun create(group: ExposedGroupLike): Int = dbQuery {
         Groups.insert {
-            it[admin] = group.admin.id
+            it[admin] = group.id
+            it[title] = group.title
             it[slug] = group.slug
         }[Groups.id]
     }
@@ -91,6 +100,7 @@ class GroupService(val userService: UserService) {
     private fun parseGroup(result: ResultRow): ExposedGroupWithoutMembers {
         return ExposedGroupWithoutMembers(
             result[Groups.id],
+            result[Groups.title],
             result[Groups.admin],
             result[Groups.slug]
         )
@@ -106,22 +116,14 @@ class GroupService(val userService: UserService) {
 
         return ExposedGroup(
             result[Groups.id],
+            result[Groups.title],
             userService.read(result[Groups.admin])!!,
             result[Groups.slug],
             members
         )
     }
 
-    suspend fun inviteUser(group: ExposedGroupWithoutMembers, user: ExposedUser) {
-        dbQuery {
-            GroupMembership.insertIgnore {
-                it[GroupMembership.group] = group.id
-                it[GroupMembership.user] = user.id
-            }
-        }
-    }
-
-    suspend fun inviteUser(group: ExposedGroup, user: ExposedUser) {
+    suspend fun inviteUser(group: ExposedGroupLike, user: ExposedUser) {
         dbQuery {
             GroupMembership.insertIgnore {
                 it[GroupMembership.group] = group.id

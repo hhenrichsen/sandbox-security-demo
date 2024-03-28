@@ -129,7 +129,6 @@ fun Application.configureRouting() {
                 call.response.headers.append("Set-Cookie", "token=$token; HttpOnly; SameSite=Strict; Path=/;")
                 call.response.headers.append("HX-Redirect", "/")
                 call.respond(HttpStatusCode.Created)
-
             }
         }
         get("/api/me") {
@@ -143,7 +142,14 @@ fun Application.configureRouting() {
             withErrorHandling {
                 authentication.withAuth(call) { auth ->
                     val group = call.receive<CreateGroup>()
-                    val id = groupService.create(group.slug.lowercase().replace(Regex("\\W"), "-"), auth.id)
+                    val id = groupService.create(
+                        group.slug?.lowercase()?.replace(Regex("\\W"), "-") ?: group.title.replace(
+                            Regex("\\W"),
+                            "-"
+                        ),
+                        group.title,
+                        auth.id
+                    )
                     call.response.headers.append("HX-Redirect", "/")
                     call.respond(HttpStatusCode.Created, id)
                 }
@@ -302,7 +308,7 @@ fun Application.configureRouting() {
                         return@withGroup
                     }
                     call.respondHtml {
-                        postView(note.title, markdownService.parse(note.content))
+                        postView(note, markdownService.parse(note.content))
                     }
                 }
             }

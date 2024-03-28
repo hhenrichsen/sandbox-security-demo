@@ -1,16 +1,17 @@
 package dev.hx2.pages
 
+import dev.hx2.models.ExposedNote
 import kotlinx.html.*
 
-fun HTML.postView(title: String, body: String) {
-    page(title) {
+fun HTML.postView(note: ExposedNote, content: String) {
+    page(note.title) {
         div {
             classes = setOf("min-h-full flex flex-col justify-center items-center")
             main {
                 classes = setOf("bg-white", "@dark:bg-neutral-900", "p-4", "rounded-md", "shadow-md", "min-w-[65ch]")
                 h2 {
                     classes = setOf("text-3xl", "font-bold", "mb-4")
-                    +title
+                    +"${note.title} (via ${note.owner.title})"
                 }
 
                 div {
@@ -108,7 +109,7 @@ fun HTML.postView(title: String, body: String) {
                         }
                     }
                     unsafe {
-                        +body
+                        +content
                     }
                 }
             }

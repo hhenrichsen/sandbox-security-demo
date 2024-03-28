@@ -19,6 +19,7 @@ fun HTML.createGroup(auth: ExposedUser) {
                 attributes["hx-ext"] = "json-enc"
                 attributes["hx-post"] = "/api/groups"
                 classes = setOf("flex", "flex-col")
+                inputWithTitle("title", "Title")
                 inputWithTitle("slug", "Slug")
                 button {
                     classes = setOf("my-4", "p-2", "bg-teal-500", "text-white", "rounded-md")
