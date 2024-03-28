@@ -38,7 +38,19 @@ fun HTML.myNotes(notes: List<ExposedNote>, auth: ExposedUser) {
                             "@dark:text-neutral-100",
                             "max-w-prose",
                         )
-                        +it.content.slice(0..min(100, it.content.length - 1))
+                        val firstLine = it.content.split("\n").firstOrNull() ?: ""
+                        +firstLine.slice(
+                            0..min(
+                                100,
+                                if (firstLine.endsWith(".")) firstLine.length - 2 else firstLine.length - 1
+                            )
+                        )
+                        if (firstLine.length > 100 || it.content.lines().size > 1) {
+                            span {
+                                classes = setOf("text-teal-500")
+                                +"..."
+                            }
+                        }
                     }
                 }
             }
