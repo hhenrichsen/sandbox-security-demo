@@ -188,6 +188,7 @@ fun Application.configureRouting() {
                         call.respond(HttpStatusCode.NotFound, "User not found")
                         return@withAuth
                     }
+                    call.response.headers.append("HX-Redirect", "/")
                     groupService.inviteUser(group, user)
                     call.respond(HttpStatusCode.OK)
                 }
